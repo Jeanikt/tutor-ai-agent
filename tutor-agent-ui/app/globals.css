@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Design tokens for Manu. Every color, font, radius and shadow used in the app is
+  defined here; components never invent their own.
+
+  The page is a sheet of squared notebook paper written in blue ballpoint ink, and
+  the one thing on it that is not paper is the green chalkboard.
+*/
+@theme {
+  /* Paper and ink */
+  --color-papel: #f5f8fc;
+  --color-grade: #dfe7f2;
+  --color-folha: #ffffff;
+  --color-borda: #d3dcea;
+  --color-tinta: #1d3a8a;
+  --color-tinta-forte: #152c6b;
+  --color-texto: #131a33;
+  --color-texto-2: #4a5578;
+
+  /* Chalkboard */
+  --color-lousa: #1e4a3d;
+  --color-lousa-funda: #173a30;
+  --color-moldura: #b98a4e;
+  --color-giz: #f3f0e6;
+  --color-giz-amarelo: #f2c94c;
+  --color-giz-rosa: #f4a9a8;
+
+  /* Meaning: right, wrong, attention */
+  --color-certo: #1b8454;
+  --color-errado: #c8323a;
+  --color-atencao: #a8690a;
+
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-giz: var(--font-patrick), "Comic Sans MS", cursive;
+
+  --radius-controle: 12px;
+  --radius-folha: 16px;
+  --radius-lousa: 10px;
+
+  --shadow-folha: 0 1px 2px rgb(19 26 51 / 0.06), 0 8px 24px rgb(19 26 51 / 0.05);
+  --shadow-lousa: 0 2px 4px rgb(19 26 51 / 0.12), 0 16px 32px rgb(19 26 51 / 0.1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-papel);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+  /* Squared paper, 24px grid (3 x the 8px spacing unit). */
+  background-color: var(--color-papel);
+  background-image:
+    linear-gradient(var(--color-grade) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grade) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-tinta);
+  outline-offset: 3px;
+}
+
+.lousa :focus-visible {
+  outline-color: var(--color-giz-amarelo);
+}
+
+/* KaTeX sizes itself from the surrounding font size; the board sets it. */
+.lousa .katex-display {
+  margin: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 4px;
+}
+
+dialog::backdrop {
+  background: rgb(19 26 51 / 0.45);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The only unprompted motion in the app: chalk appearing on the board. */
+  .giz-entra {
+    animation: giz-entra 320ms ease-out both;
+  }
+  .onda > span {
+    transition: height 90ms linear;
+  }
+}
+
+@keyframes giz-entra {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
 }
