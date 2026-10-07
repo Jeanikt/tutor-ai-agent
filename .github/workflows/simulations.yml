@@ -1,0 +1,40 @@
+# Runs the conversations in tutor-agent/scenarios.yaml against the agent on LiveKit Cloud.
+# Simulations spend real inference, so this runs on demand, and on merges to main only
+# after you opt in: add the LIVEKIT_URL, LIVEKIT_API_KEY and LIVEKIT_API_SECRET secrets
+# and set the repository variable MANU_SIMULATIONS to "on".
+# Run `lk agent simulate text --scenarios scenarios.yaml` locally while iterating.
+name: Simulations
+
+on:
+  push:
+    branches: [main]
+    paths: [tutor-agent/**]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  simulate:
+    if: github.event_name == 'workflow_dispatch' || vars.MANU_SIMULATIONS == 'on'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tutor-agent
+    env:
+      LIVEKIT_URL: ${{ secrets.LIVEKIT_URL }}
+      LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
+      LIVEKIT_API_SECRET: ${{ secrets.LIVEKIT_API_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: pnpm install --frozen-lockfile
+      - name: Install LiveKit CLI
+        run: curl -sSL https://get.livekit.io/cli | bash
+      - name: Run simulations
+        run: lk agent simulate text --scenarios scenarios.yaml
